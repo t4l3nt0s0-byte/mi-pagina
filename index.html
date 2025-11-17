@@ -129,23 +129,59 @@
             .day-selector{ gap:8px; }
             .day-btn{ padding:10px 16px; font-size:.9em; }
         }
+
+/* Ocultar botón Descargar HTML */
+button[onclick="exportToHTML()"] {
+    display: none !important;
+}
+
+
+
+
     </style>
 </head>
 <body>
+
+<!-- Banner FESC Cuautitlán -->
+<div style="width:100%; overflow:hidden; margin-bottom:20px;">
+    <img src="banner-fesc.jpeg"
+         alt="Banner FESC"
+         style="
+            width:100%;
+            height:45vh;               /* altura flexible según pantalla */
+            object-fit:cover;
+            object-position:top;       /* <-- Muestra la parte superior de la imagen */
+            filter:brightness(0.95);
+         ">
+</div>
+
+
+
+    
+    
+
     <button class="theme-toggle" onclick="toggleTheme()">🌓 Cambiar Tema</button>
 
     <div class="container" id="appRoot">
         <div class="header">
             <h1>💰 Control de Gastos Hormiga</h1>
-            <p>Por Christian Hernández S. | UNAM-FESC4</p>
+            <p>Por Ing. Christian Hernández S. | UNAM-FESC4</p>
             <div class="demo-badge">✨ Versión con Ejemplo Precargado</div>
         </div>
 
         <div class="content">
-            <div class="demo-alert" id="demoAlert">
-                <span>ℹ️ <strong>Modo Demo:</strong> Esta aplicación incluye datos de ejemplo. Puedes eliminarlos y empezar tu propio control.</span>
-                <button onclick="clearAllData()">Limpiar y Empezar</button>
-            </div>
+           <div class="demo-alert" id="demoAlert">
+    <span>ℹ️ <strong>Modo Demo:</strong> Esta aplicación incluye datos de ejemplo. Puedes eliminarlos y empezar tu propio control.</span>
+
+    <!-- LIMPIAR TODO -->
+    <button onclick="clearAllData()">Limpiar y Empezar</button>
+
+    <!-- NUEVO BOTÓN EJEMPLO -->
+    <button onclick="loadDemoExample()" style="margin-left:10px; background:#10b981;">
+        Cargar Ejemplo
+    </button>
+</div>
+
 
             <!-- Configuración Personal -->
             <div class="section">
@@ -183,7 +219,7 @@
                 <div class="form-group">
                     <label>
                         <input type="checkbox" id="includeWeekend" onchange="toggleWeekend()">
-                        ¿Trabajas fines de semana?
+                        ¿Estudias fines de semana?
                     </label>
                 </div>
                 <button class="btn btn-primary" onclick="saveBudget()">✅ Establecer Presupuesto</button>
@@ -231,7 +267,7 @@
                             <option value="Cafés y Bebidas">☕ Cafés y Bebidas</option>
                             <option value="Entretenimiento">🎮 Entretenimiento</option>
                             <option value="Material Escolar">📚 Material Escolar</option>
-                            <option value="Snacks">🍿 Snacks</option>
+                            <option value="Dulces">🍿 Dulces</option>
                             <option value="Servicios">📱 Servicios (Internet, Tel.)</option>
                             <option value="Otros">💸 Otros</option>
                         </select>
@@ -259,7 +295,7 @@
                 <div class="savings-goal" id="savingsGoalSection" style="display:none;">
                     <h3>🎯 Meta de Ahorro</h3>
                     <p>Meta: <strong id="goalAmount">$0</strong></p>
-                    <p>Proyectado: <strong id="projectedSavings">$0</strong></p>
+                    <p>Presupuesto Disponible: <strong id="projectedSavings">$0</strong></p>
                     <div class="progress-bar">
                         <div class="progress-fill" id="savingsProgress">0%</div>
                     </div>
@@ -299,6 +335,22 @@
                 <button class="btn btn-primary" onclick="exportToPDF()">📄 Descargar PDF (Historial)</button>
                 <button class="btn btn-primary" onclick="exportToHTML()">🌐 Descargar HTML</button>
             </div>
+<!-- Imagen UNAM Posgrado -->
+<div style="width:100%; text-align:center; margin-top:25px;">
+    <img src="posgrado-unam.jpeg"
+         alt="UNAM Posgrado"
+         style="
+            width:160px;          /* tamaño pequeño */
+            height:auto;
+            border-radius:20px;   /* bordes redondeados */
+            box-shadow:0 4px 12px rgba(0,0,0,0.25); /* sombra elegante opcional */
+            display:block;
+            margin:auto;
+        ">
+</div>
+
+
+
         </div>
     </div>
 
@@ -331,12 +383,60 @@
 
         /***** Util: formatea "lun 10" con acentos donde corresponde *****/
         const SHORT_DAY_NAMES = ['dom','lun','mar','mié','jue','vie','sáb'];
-        function shortDayNumFromIso(iso){
-            const d = new Date(iso);
-            const day = d.getDate().toString().padStart(2,'0');
-            const wd = SHORT_DAY_NAMES[d.getDay()];
-            return `${wd} ${day}`;
-        }
+
+
+
+   
+function shortDayNumFromIso(iso){
+    const d = isoToLocalDate(iso);  // <<< CORRECCIÓN IMPORTANTE
+    const day = d.getDate().toString().padStart(2,'0');
+    const wd = SHORT_DAY_NAMES[d.getDay()];
+    return `${wd} ${day}`;
+}
+
+
+
+
+
+
+
+// Convierte 'YYYY-MM-DD' a Date local (evita desplazamientos de zona horaria)
+function isoToLocalDate(iso){
+    if(!iso) return null;
+    const parts = iso.split('-').map(n => Number(n));
+    // year, monthIndex (0-based), day
+    return new Date(parts[0], parts[1]-1, parts[2]);
+}
+
+
+
+function isoAdd(dateObj, dayOffset){
+    let d;
+    if(typeof dateObj === 'string'){
+        d = isoToLocalDate(dateObj);
+    } else {
+        d = new Date(dateObj);
+    }
+    d.setDate(d.getDate() + dayOffset);
+
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,'0');
+    const dd = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${dd}`;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         /***** Carga general *****/
         function loadAll(){
@@ -364,7 +464,19 @@
             const sd = document.getElementById('startDate').value || new Date().toISOString().slice(0,10);
             document.getElementById('startDate').value = sd;
 
-            if(!expenses || expenses.length === 0) loadDemoData();
+            const forceEmpty = sessionStorage.getItem("forceEmpty"); 
+
+if(!expenses || expenses.length === 0){
+    if(forceEmpty === "yes"){
+        // No cargar demo
+        expenses = [];
+        saveToLS(LS_KEYS.EXPENSES, expenses);
+    } else {
+        // Cargar demo (comportamiento original)
+        loadDemoData();
+    }
+}
+
 
             // Reconstruir todo
             buildDaySelector();
@@ -375,41 +487,66 @@
         }
 
         /***** Datos demo (si no hay) *****/
-        function loadDemoData(){
-            const todayIso = new Date().toISOString().slice(0,10);
-            const demoProfile = { name:'Christian Hernández', degree:'Administración', startDate: todayIso };
-            saveToLS(LS_KEYS.PROFILE, demoProfile);
-            document.getElementById('studentName').value = demoProfile.name;
-            document.getElementById('degree').value = demoProfile.degree;
-            document.getElementById('startDate').value = demoProfile.startDate;
 
-            const demoBudget = { weekly:1200, goal:300, includeWeekend:false };
-            saveToLS(LS_KEYS.BUDGET, demoBudget);
-            document.getElementById('weeklyBudget').value = demoBudget.weekly;
-            document.getElementById('savingsGoal').value = demoBudget.goal;
-            document.getElementById('includeWeekend').checked = demoBudget.includeWeekend;
-            document.getElementById('budgetDisplay').style.display = 'block';
 
-            const today = new Date();
-            const base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            const demoExpenses = [
-                { id: genId(), date: isoAdd(base, -6), category: 'Transporte', amount: 24.5, description: 'Metro + camión' },
-                { id: genId(), date: isoAdd(base, -6), category: 'Cafés y Bebidas', amount: 35, description: 'Café' },
-                { id: genId(), date: isoAdd(base, -4), category: 'Comida', amount: 95.2, description: 'Comida corrida' },
-                { id: genId(), date: isoAdd(base, -3), category: 'Snacks', amount: 20, description: 'Botana' },
-                { id: genId(), date: isoAdd(base, -2), category: 'Servicios', amount: 49.99, description: 'Recarga' },
-                { id: genId(), date: isoAdd(base, -1), category: 'Transporte', amount: 30, description: 'Uber' },
-                { id: genId(), date: isoAdd(base, 0), category: 'Entretenimiento', amount: 120, description: 'Cine' },
-            ];
-            saveToLS(LS_KEYS.EXPENSES, demoExpenses);
-            expenses = demoExpenses;
-        }
+/***** Datos demo (si no hay) *****/
+function loadDemoData(){
+    // Fecha fija del ejemplo
+    const fixedDate = "2026-02-09";  // 09/02/2026
 
-        function isoAdd(dateObj, dayOffset){
-            const d = new Date(dateObj);
-            d.setDate(d.getDate() + dayOffset);
-            return d.toISOString().slice(0,10);
-        }
+    // PERFIL
+    const demoProfile = { 
+        name: 'Christian Hernández', 
+        degree: 'I.M.E', 
+        startDate: fixedDate
+    };
+    saveToLS(LS_KEYS.PROFILE, demoProfile);
+
+    document.getElementById('studentName').value = demoProfile.name;
+    document.getElementById('degree').value = demoProfile.degree;
+    document.getElementById('startDate').value = fixedDate;
+
+    // PRESUPUESTO DEMO
+    const demoBudget = { weekly: 1200, goal: 300, includeWeekend: false };
+    saveToLS(LS_KEYS.BUDGET, demoBudget);
+
+    document.getElementById('weeklyBudget').value = demoBudget.weekly;
+    document.getElementById('savingsGoal').value = demoBudget.goal;
+    document.getElementById('includeWeekend').checked = demoBudget.includeWeekend;
+    document.getElementById('budgetDisplay').style.display = 'block';
+
+    // GENERAR GASTOS DEMO (fechas relativas a fixedDate)
+    const base = isoToLocalDate(fixedDate);
+
+
+    const demoExpenses = [
+        { id: genId(), date: isoAdd(base, 0), category: 'Comida', amount: 95.2, description: 'Torta + Agua' },            // lun 04
+        { id: genId(), date: isoAdd(base, 1), category: 'Transporte', amount: 24.5, description: 'Camión' },             // mar 05
+        { id: genId(), date: isoAdd(base, 1), category: 'Cafés y Bebidas', amount: 30, description: 'Café' },           // mar 05
+        { id: genId(), date: isoAdd(base, 2), category: 'Servicios', amount: 49, description: 'Recarga' },               // mié 06
+        { id: genId(), date: isoAdd(base, 3), category: 'Dulces', amount: 20, description: 'Gomitas' },                  // jue 07
+        { id: genId(), date: isoAdd(base, 4), category: 'Comida', amount: 80, description: 'Comida corrida' },          // vie 08
+        { id: genId(), date: isoAdd(base, 5), category: 'Entretenimiento', amount: 120, description: 'Cine' }           // sáb 09 (si se incluye fin)
+    ];
+
+    saveToLS(LS_KEYS.EXPENSES, demoExpenses);
+    expenses = demoExpenses;
+
+    // ACTUALIZAR PANTALLA (asegura que el selector, lista y gráficas se refresquen)
+    buildDaySelector();
+    renderExpenses();
+    updateBudgetView();
+    renderCharts();
+}
+
+
+    
+
+
+
+
+
+
         function genId(){ return 'e_' + Math.random().toString(36).slice(2,9); }
 
         /***** Guardar perfil y presupuesto *****/
@@ -490,7 +627,8 @@
             const includeWeekend = document.getElementById('includeWeekend').checked || (readFromLS(LS_KEYS.BUDGET) || {}).includeWeekend;
 
             // fecha inicio EXACTA
-            let start = profile.startDate ? new Date(profile.startDate) : new Date();
+            let start = profile.startDate ? isoToLocalDate(profile.startDate) : new Date();
+
 
             const prevSelected = selectedDay;
 
@@ -570,13 +708,21 @@
             renderExpenses(); updateBudgetView(); renderCharts();
         }
 
-        function clearAllData(){
-            if(!confirm('Esto eliminará TODO (perfil, presupuesto y gastos). ¿Continuar?')) return;
-            localStorage.removeItem(LS_KEYS.PROFILE);
-            localStorage.removeItem(LS_KEYS.BUDGET);
-            localStorage.removeItem(LS_KEYS.EXPENSES);
-            location.reload();
-        }
+      function clearAllData(){
+    if(!confirm('Esto eliminará TODO (perfil, presupuesto y gastos). ¿Continuar?')) return;
+
+    // evitar carga automática del demo
+    sessionStorage.setItem("forceEmpty", "yes");
+
+    // borrar datos
+    localStorage.removeItem(LS_KEYS.PROFILE);
+    localStorage.removeItem(LS_KEYS.BUDGET);
+    localStorage.removeItem(LS_KEYS.EXPENSES);
+
+    // recargar sin demo
+    location.reload();
+}
+
 
         /***** Render lista / stats *****/
         function renderExpenses(){
@@ -586,7 +732,15 @@
             sorted.forEach(e=>{
                 const item = document.createElement('div'); item.className='expense-item';
                 const day = document.createElement('div'); day.className='expense-day';
-                day.innerText = new Date(e.date).toLocaleDateString('es-MX', { weekday:'short', day:'2-digit', month:'short' });
+                
+day.innerText = isoToLocalDate(e.date).toLocaleDateString(
+    'es-MX',
+    { weekday:'short', day:'2-digit', month:'short' }
+);
+
+
+
+
                 const details = document.createElement('div'); details.className='expense-details';
                 const cat = document.createElement('div'); cat.className='expense-category'; cat.innerText = e.category;
                 const desc = document.createElement('div'); desc.className='expense-description'; desc.innerText = e.description || '';
@@ -628,7 +782,8 @@
             const includeWeekend = document.getElementById('includeWeekend').checked || (readFromLS(LS_KEYS.BUDGET) || {}).includeWeekend;
 
             // construir array de 7 dias consecutivos desde start
-            const start = new Date(profile.startDate);
+            const start = isoToLocalDate(profile.startDate);
+
             const weekDays = [];
             for(let i=0;i<7;i++){
                 const d = new Date(start);
@@ -707,7 +862,9 @@
         function exportToPDF(){
             const profile = readFromLS(LS_KEYS.PROFILE) || {};
             const includeWeekend = document.getElementById('includeWeekend').checked || (readFromLS(LS_KEYS.BUDGET) || {}).includeWeekend;
-            const start = profile.startDate ? new Date(profile.startDate) : new Date();
+            const start = profile.startDate ? isoToLocalDate(profile.startDate) : new Date();
+
+
 
             // construir los 7 dias desde start (mismas reglas que charts)
             const weekDays = [];
@@ -864,8 +1021,30 @@
                 });
             }
         });
+function loadDemoExample(){
+    if(!confirm("¿Deseas cargar el ejemplo pre-cargado? Se perderán tus datos actuales.")) return;
+    loadDemoData();
+    buildDaySelector();
+    renderExpenses();
+    updateBudgetView();
+    renderCharts();
+}
 
     </script>
+<footer style="
+    text-align:center;
+    margin-top:40px;
+    padding:20px;
+    font-size:0.9em;
+    color:#333;
+    opacity:0.8;
+">
+    Universidad Nacional Autónoma de México<br>
+    Facultad de Estudios Superiores Cuautitlán<br>
+    © 2025 FESC-4, UNAM
+</footer>
+
+
 </body>
 </html>
- ultima calculaor de op
+ 
