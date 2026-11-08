@@ -1,5 +1,5 @@
 /* Control de Gastos Hormiga — Service Worker (offline) · v1 */
-const CACHE = 'gastos-hormiga-v4';
+const CACHE = 'gastos-hormiga-v5';
 const CORE = [
   './',
   './index.html',
@@ -9,10 +9,10 @@ const CORE = [
   './icon.jpeg',
   './banner-fesc.jpeg',
   './posgrado-unam.jpeg',
-  './lib/chart.umd.js',
-  './lib/html2canvas.min.js',
-  './lib/jspdf1.min.js',
-  './lib/html2pdf.js',
+  './chart.umd.js',
+  './html2canvas.min.js',
+  './jspdf1.min.js',
+  './html2pdf.js',
 ];
 self.addEventListener('install', e => {
   e.waitUntil(
