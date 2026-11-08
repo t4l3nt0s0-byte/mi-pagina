@@ -1,5 +1,5 @@
 /* Control de Gastos Hormiga — Service Worker (offline) · v1 */
-const CACHE = 'gastos-hormiga-v3';
+const CACHE = 'gastos-hormiga-v4';
 const CORE = [
   './',
   './index.html',
@@ -13,7 +13,6 @@ const CORE = [
   './lib/html2canvas.min.js',
   './lib/jspdf1.min.js',
   './lib/html2pdf.js',
-  './lib/qrcode.js'
 ];
 self.addEventListener('install', e => {
   e.waitUntil(
